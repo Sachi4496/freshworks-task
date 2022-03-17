@@ -15,7 +15,7 @@
 
     </div>
     <div id="searchs">
-        <input oninput="debounce(main,1000)" type="text" id="search" placeholder="Search receipe "/>
+        <input oninput="debounce(main,1000)" type="text" id="search" placeholder="Search receipe " />
         <div id="food"></div>
     </div>
     <div id="detailsFood">
@@ -32,151 +32,135 @@
     navbar_div.innerHTML = nav();
 </script>
 <script>
-  let food_div = document.getElementById("food");
-  //search Movies
-  var timerId;
-  async function searchFood(food_name) {
-    try {
+    let food_div = document.getElementById("food");
+    var timerId;
+    async function searchFood(food_name) {
+        try {
 
-      let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${food_name}`);
+            let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${food_name}`);
 
-      let data = await res.json();
-      
-      console.log("pasta:",data.meals);
-      if(data.meals == null){
-        alert(`${food_name} food not found`)
-      }else{
-      return data;
-      }
+            let data = await res.json();
+
+            console.log("pasta:", data.meals);
+            if (data.meals == null) {
+                alert(`${food_name} food not found`)
+            } else {
+                return data;
+            }
+
+        }
+        catch (e) {
+            console.log(e)
+        }
 
     }
-    catch (e) {
-      console.log(e)
+
+    function appendFood(foods) {
+        if (foods === undefined) {
+            return false;
+        }
+        food_div.innerHTML = null;
+        foods.forEach((food) => {
+            let div = document.createElement("div");
+            let left = document.createElement("div");
+            let right = document.createElement("div");
+
+            div.style.backgroundColor = "whitesmoke";
+
+            left.style.display = "inline-block";
+            left.style.marginLeft = "10px";
+
+            right.style.display = "inline-block";
+            right.style.marginLeft = "10px";
+            right.style.verticalAlign = "top";
+
+            let img = document.createElement("img");
+            img.src = food.strMealThumb;
+
+            img.style.display = "inline-block";
+
+            let cata = document.createElement("p");
+            cata.innerHTML = "Categorey:- " + food.strCategory;
+            cata.style.display = "block";
+            cata.style.margin = "0";
+
+            let p = document.createElement("p");
+            p.innerHTML = "Name:- " + food.strMeal;
+            p.style.display = "inline-block";
+            p.style.margin = "0";
+
+            let area = document.createElement("p");
+            area.innerHTML = "Type:- " + food.strArea;
+            area.style.display = "inline-block";
+            area.style.margin = "0";
+            left.append(img);
+            right.append(p, cata, area);
+            div.append(left, right);
+            div.addEventListener("click", () => {
+                detailsFood(food);
+            });
+            food_div.append(div);
+        });
     }
 
-  }
-
-  function appendFood(foods) {
-    if (foods === undefined) {
-      return false;
-    }
-    food_div.innerHTML = null;
-    foods.forEach((food)=> {
-      let div = document.createElement("div");
-      let left = document.createElement("div");
-      let right = document.createElement("div");
-
-      div.style.backgroundColor ="whitesmoke";
-      
-      left.style.display="inline-block";
-      left.style.marginLeft="10px";
-
-      right.style.display="inline-block";
-      right.style.marginLeft="10px";
-      right.style.verticalAlign="top";
-
-      let img = document.createElement("img");
-      img.src = food.strMealThumb;
-      
-      img.style.display="inline-block";
-
-      let cata = document.createElement("p");
-      cata.innerHTML ="Categorey:- "+ food.strCategory;
-      cata.style.display="block";
-      cata.style.margin="0";
-
-      let p = document.createElement("p");
-      p.innerHTML ="Name:- "+ food.strMeal;
-      p.style.display="inline-block";
-      p.style.margin="0";
-
-      let area = document.createElement("p");
-      area.innerHTML ="Type:- "+ food.strArea;
-      area.style.display="inline-block";
-      area.style.margin="0";
-
-      
-
-      left.append(img);
-      right.append(p,cata,area);
-      div.append(left,right);
-      div.addEventListener("click",()=>{
-        detailsFood(food);
-      });
-      food_div.append(div);
-    });
-  }
-
-  async function main() {
-    let name = document.getElementById("search").value;
+    async function main() {
+        let name = document.getElementById("search").value;
 
 
-    if (name.length < 3) {
-      food_div.style.display = "none";
-      return false;
+        if (name.length < 3) {
+            food_div.style.display = "none";
+            return false;
+        }
+
+        food_div.style.display = "block";
+
+        let res = await searchFood(name);
+
+        let foodData = res.meals;
+
+        appendFood(foodData);
     }
 
-    food_div.style.display = "block";
+    function debounce(func, delay) {
+        if (timerId) {
+            clearTimeout(timerId)
+        }
 
-    let res = await searchFood(name);
-
-    let foodData = res.meals;
-
-    appendFood(foodData);
-
-    // console.log("res",res.meals);
-  }
-
-  function debounce(func, delay) {
-    if (timerId) {
-      clearTimeout(timerId)
+        timerId = setTimeout(function () {
+            func();
+        }, delay);
     }
 
-    timerId = setTimeout(function () {
-      func();
-    }, delay);
-  }
+    let detailsfoods = document.getElementById("detailsFood");
+    function detailsFood(food) {
 
-  let detailsfoods = document.getElementById("detailsFood");
-  function detailsFood(food){
-    // console.log("detais:--",food);
+        detailsfoods.innerHTML = null;
 
-    detailsfoods.innerHTML = null;
+        let div = document.createElement("div");
+        let left = document.createElement("div");
+        let right = document.createElement("div");
+        let img = document.createElement("img");
+        img.src = food.strMealThumb;
 
-    let div = document.createElement("div");
-      let left = document.createElement("div");
-      let right = document.createElement("div");
 
-      // let videos = document.createElement("div");
+        let cata = document.createElement("p");
+        cata.innerHTML = "Categorey:- " + food.strCategory;
 
-      let img = document.createElement("img");
-      img.src = food.strMealThumb;
-      
+        let p = document.createElement("p");
+        p.innerHTML = "Name:- " + food.strMeal;
 
-      let cata = document.createElement("p");
-      cata.innerHTML ="Categorey:- "+ food.strCategory;
+        let area = document.createElement("p");
+        area.innerHTML = "Type:- " + food.strArea;
 
-      let p = document.createElement("p");
-      p.innerHTML ="Name:- "+ food.strMeal;
 
-      let area = document.createElement("p");
-      area.innerHTML ="Type:- "+ food.strArea;
+        let strInstructions = document.createElement("p");
+        strInstructions.innerHTML = "Instructions:- " + food.strInstructions;
 
-      
-      let strInstructions = document.createElement("p");
-      strInstructions.innerHTML ="Instructions:- "+ food.strInstructions;
+        let idMeal = document.createElement("p");
+        idMeal.innerHTML = "Meal Id:- " + food.idMeal;
 
-      
-      // let strYoutube = document.createElement("video");
-      // strYoutube.src =food.strYoutube;
-
-      
-      let idMeal = document.createElement("p");
-      idMeal.innerHTML ="Meal Id:- "+ food.idMeal;
-
-      left.append(img);
-      // videos.append(strYoutube);
-      right.append(cata,p,area,idMeal,strInstructions);
-      detailsfoods.append(left,right);
-  }
+        left.append(img);
+        right.append(cata, p, area, idMeal, strInstructions);
+        detailsfoods.append(left, right);
+    }
 </script>
